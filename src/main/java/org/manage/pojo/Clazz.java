@@ -45,6 +45,7 @@ public class Clazz {
         this.maxStudents = maxStudents;
     }
 
+    
     public void addStudent(Student student) {
         if (students.size() >= maxStudents) {
             System.out.println("班级已满，无法添加更多学生！");

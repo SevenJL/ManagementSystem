@@ -68,7 +68,6 @@ public class Student implements Person {
         this.sex = sex;
         this.birthday = birthday;
     }
-    // Getter 和 Setter 方法
 
     public String getId() {
         return id;

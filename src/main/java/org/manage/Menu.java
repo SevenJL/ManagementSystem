@@ -1,13 +1,14 @@
 package org.manage;
 
 import org.manage.exception.InvalidInputException;
-import org.manage.pojo.Clazz;
-import org.manage.pojo.Lecturer;
-import org.manage.pojo.Student;
+import org.manage.pojo.*;
+import org.manage.utils.DBUtil;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -16,10 +17,13 @@ public class Menu {
     private final Scanner scanner;
     private final Clazz clazz = new Clazz("软件工程", "2024", 50);
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, SQLException {
         new Menu().run();
     }
 
+    /**
+     * 构造方法
+     */
     public Menu() {
         // 定义一级菜单和二级菜单
         menus = new String[][]{
@@ -30,6 +34,9 @@ public class Menu {
         scanner = new Scanner(System.in);
     }
 
+    /**
+     * 显示菜单
+     */
     public void displayMenu(String[] menu) {
         System.out.println();
         System.out.println("=====================");
@@ -41,8 +48,10 @@ public class Menu {
         System.out.println("=====================");
     }
 
-
-    public void run() throws ParseException {
+    /**
+     * 程序入口
+     */
+    public void run() throws ParseException, SQLException {
         while (true) {
             displayMenu(menus[0]); // 显示一级菜单
             System.out.print("请输入序号使用功能：");
@@ -56,6 +65,11 @@ public class Menu {
                 case 6 -> readFile();
                 case 7 -> {
                     System.out.println("系统退出成功，欢迎下次使用！");
+                    // 关闭资源
+                    scanner.close();
+                    // 关闭数据库连接
+                    DBStudent.closeConnection();
+                    DBLecturer.closeConnection();
                     return;
                 }
                 default -> System.out.println("无效选择，请重新输入！");
@@ -63,17 +77,79 @@ public class Menu {
         }
     }
 
+    /**
+     * 显示班级信息
+     */
     private void displayClassInfo() {
-        clazz.printClazzInfo(); // 打印班级信息
+        // 查询数据库
+        try {
+            // 查询学生和教师信息
+            List<Student> students = DBStudent.selectAllStudents();
+            List<Lecturer> lecturers = DBLecturer.selectAllLecturers();
+            // 显示班级信息
+            System.out.println(
+                    "2024级" + clazz.getGrade() + 
+                    "级-" + clazz.getMajor() + 
+                    "专业-学生人数：" + students.size() + 
+                    ",专业教师人数：" + lecturers.size());
+            // 显示学生信息
+            System.out.println("学生列表：");
+            for (Student student : students) {
+                System.out.println(student.showInfo());
+            }
+            // 显示教师信息
+            System.out.println("教师列表：");
+            for (Lecturer lecturer : lecturers) {
+                System.out.println(lecturer.showInfo());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void studentManagement() throws ParseException {
+    /**
+     * 教师管理
+     */
+    private void displayStudentInfo() {
+        try {
+            // 查询数据库
+            List<Student> students = DBStudent.selectAllStudents();
+            System.out.println("学生列表：");
+            for (Student student : students) {
+                System.out.println(student.showInfo());
+            }
+            System.out.println("总计学生人数：" + students.size());
+        } catch (SQLException e) {
+            throw new RuntimeException("查询学生信息时发生错误: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 教师管理
+     */
+    private void displayLecturerInfo() {
+        try {
+            List<Lecturer> lecturers = DBLecturer.selectAllLecturers();
+            System.out.println("教师列表：");
+            for (Lecturer lecturer : lecturers) {
+                System.out.println(lecturer.showInfo());
+            }
+            System.out.println("总计教师人数：" + lecturers.size());
+        } catch (SQLException e) {
+            throw new RuntimeException("查询教师信息时发生错误: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 学生管理
+     */
+    private void studentManagement() throws ParseException, SQLException {
         while (true) {
             displayMenu(menus[1]); // 显示学生管理二级菜单
             System.out.print("请输入序号使用功能：");
             int choice = getUserChoice(menus[1].length);
             switch (choice) {
-                case 1 -> displayClassInfo();
+                case 1 -> displayStudentInfo();
                 case 2 -> addStudent();
                 case 3 -> deleteStudent();
                 case 4 -> updateStudent();
@@ -91,9 +167,13 @@ public class Menu {
         }
     }
 
+    /**
+     * 获取用户输入的选择
+     */
     private int getUserChoice(int maxOption) {
         int choice;
         try {
+            // 获取用户输入
             choice = scanner.nextInt();
             if (choice < 1 || choice > maxOption) {
                 throw new InvalidInputException("无效选择，请输入1-" + maxOption + "之间的数字！");
@@ -106,56 +186,51 @@ public class Menu {
         return choice;
     }
 
-    private void addStudent() throws ParseException {
+    /**
+     * 添加学生
+     */
+    private void addStudent(){
         System.out.print("请输入学生学号（S开头4位，例如：S001）：");
         String id = scanner.next();
-        if (!id.matches("S\\d{3}")) {
-            System.out.println("学号格式错误，必须以'S'开头，后接3位数字！");
-            return;
-        }
         System.out.print("请输入学生姓名：");
         String name = scanner.next();
         System.out.print("请输入学生年龄（1-100）：");
         int age = scanner.nextInt();
-        if (age < 1 || age > 100) {
-            System.out.println("年龄必须在1到100之间！");
-            return;
-        }
         System.out.print("请输入学生性别（男/女）：");
         String gender = scanner.next();
-        if (!gender.equals("男") && !gender.equals("女")) {
-            System.out.println("性别输入无效，只能输入'男'或'女'！");
-            return;
-        }
         System.out.print("请输入学生出生日期(格式：2024.02.10)：");
         String birthday = scanner.next();
-        if (!Pattern.matches("\\d{4}\\.\\d{2}\\.\\d{2}", birthday)) {
-            System.out.println("出生日期格式错误！");
-            return;
-        }
         try {
             // 格式化为 Date 类型
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
             Date birthdayDate = dateFormat.parse(birthday);
             // 创建 Student 对象
             Student student = new Student(id, name, age, gender, birthdayDate);
-            clazz.addStudent(student);
+            DBStudent.addStudent(student);
         } catch (ParseException e) {
             System.out.println("日期解析错误：" + e.getMessage());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private void deleteStudent() {
+    /**
+     * 删除学生
+     */
+    private void deleteStudent() throws SQLException {
         System.out.print("请输入要删除的学生学号：");
         String id = scanner.next();
         if (clazz.isStudentExist(id)) {
-            clazz.deleteStudent(id);
+            DBStudent.deleteStudent(id);
             System.out.println("学生删除成功！");
         } else {
             System.out.println("学号不存在，删除失败！");
         }
     }
 
+    /**
+     * 修改学生信息
+     */
     private void updateStudent() throws ParseException {
         System.out.print("请输入要修改的学生学号：");
         String id = scanner.next();
@@ -171,26 +246,27 @@ public class Menu {
         String gender = scanner.next();
         System.out.print("请输入学生出生日期(格式：2024.02.10)：");
         String birthday = scanner.next();
-        if (!Pattern.matches("\\d{4}\\.\\d{2}\\.\\d{2}", birthday)) {
-            System.out.println("出生日期格式错误！");
-            return;
-        }
         try {
             // 格式化为 Date 类型
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
             Date birthdayDate = dateFormat.parse(birthday);
             // 创建 Student 对象
             Student student = new Student(id, name, age, gender, birthdayDate);
-            clazz.updateStudent(student);
+            DBStudent.updateStudent(student);
         } catch (ParseException e) {
             System.out.println("日期解析错误：" + e.getMessage());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private void searchStudent() {
+    /**
+     * 根据学号查询学生
+     */
+    private void searchStudent() throws SQLException {
         System.out.print("请输入要查询的学生学号：");
         String id = scanner.next();
-        Student student = clazz.selectStudentById(id);
+        Student student = DBStudent.selectStudentById(id);
         if (student != null) {
             String s = student.showInfo();
             System.out.println(s);
@@ -199,13 +275,16 @@ public class Menu {
         }
     }
 
-    private void teacherManagement() throws ParseException {
+    /**
+     * 教师管理
+     */
+    private void teacherManagement() throws ParseException, SQLException {
         while (true) {
             displayMenu(menus[2]); // 显示教师管理二级菜单
             System.out.print("请输入序号使用功能：");
             int choice = getUserChoice(menus[2].length);
             switch (choice) {
-                case 1 -> clazz.printTeacherInfo(); // 显示教师信息
+                case 1 -> displayLecturerInfo(); // 显示教师信息
                 case 2 -> addTeacher(); // 添加教师
                 case 3 -> deleteTeacher(); // 删除教师
                 case 4 -> updateTeacher(); // 修改教师
@@ -223,6 +302,9 @@ public class Menu {
         }
     }
 
+    /**
+     * 添加教师
+     */
     private void addTeacher() throws ParseException {
         System.out.print("请输入教师工号（A开头4位，例如：A001）：");
         String id = scanner.next();
@@ -242,27 +324,37 @@ public class Menu {
             Date birthdayDate = dateFormat.parse(birthday);
             // 创建 Student 对象
             Lecturer addTeacher = new Lecturer(id, name, age, sex, course, birthdayDate);
-            clazz.addTeacher(addTeacher);
+            DBLecturer.addLecturer(addTeacher);
         } catch (ParseException e) {
             System.out.println("日期解析错误：" + e.getMessage());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private void deleteTeacher() {
+    /**
+     * 删除教师
+     */
+    private void deleteTeacher() throws SQLException {
         System.out.print("请输入要删除的教师工号：");
         String id = scanner.next();
-        if (clazz.isTeacherExist(id)) {
-            clazz.deleteTeacher(id);
+        Lecturer lecturer = DBLecturer.selectLecturerById(id);
+        if (lecturer != null) {
+            DBLecturer.deleteLecturer(id);
             System.out.println("教师删除成功！");
         } else {
             System.out.println("工号不存在，删除失败！");
         }
     }
 
-    private void updateTeacher() throws ParseException {
+    /**
+     * 修改教师信息
+     */
+    private void updateTeacher() throws SQLException {
         System.out.print("请输入要修改的教师工号：");
         String id = scanner.next();
-        if (!clazz.isTeacherExist(id)) {
+        Lecturer lecturer = DBLecturer.selectLecturerById(id);
+        if (lecturer == null) {
             System.out.println("工号不存在，无法修改！");
             return;
         }
@@ -283,17 +375,22 @@ public class Menu {
             Date birthdayDate = dateFormat.parse(birthday);
             // 创建 Student 对象
             Lecturer updatedTeacher = new Lecturer(id, name, age, sex, course, birthdayDate);
-            clazz.updateTeacher(updatedTeacher);
+            DBLecturer.updateLecturer(updatedTeacher);
         } catch (ParseException e) {
             System.out.println("日期解析错误：" + e.getMessage());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         System.out.println("教师信息修改成功！");
     }
 
-    private void searchTeacher() {
+    /**
+     * 根据工号查询教师
+     */
+    private void searchTeacher() throws SQLException {
         System.out.print("请输入要查询的教师工号：");
         String id = scanner.next();
-        Lecturer teacher = clazz.selectTeacherById(id);
+        Lecturer teacher = DBLecturer.selectLecturerById(id);
         if (teacher != null) {
             System.out.println(teacher.showInfo());
         } else {
@@ -301,6 +398,9 @@ public class Menu {
         }
     }
 
+    /**
+     * 保存学生信息到文件
+     */
     private void saveStudentInfo() {
         System.out.println("请输入文件保存的全路径，形如（“d://1.txt”）：");
         String path = scanner.next();
@@ -312,6 +412,9 @@ public class Menu {
         }
     }
 
+    /**
+     * 保存教师信息到文件
+     */
     private void saveTeacherInfo() {
         System.out.println("请输入文件保存的全路径，形如（“d://1.txt”）：");
         String path = scanner.next();
@@ -323,6 +426,9 @@ public class Menu {
         }
     }
 
+    /**
+     * 读取文件
+     */
     private void readFile() {
         System.out.println("请输入读取文件的全路径，形如（“d://1.txt”）：");
         String path = scanner.next();

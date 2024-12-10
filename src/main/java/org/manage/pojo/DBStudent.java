@@ -17,6 +17,12 @@ public class DBStudent {
         }
     }
 
+    /**
+     * 添加学生
+     * @param student
+     * @return
+     * @throws SQLException
+     */
     public static int addStudent(Student student) throws SQLException {
         String sql = "INSERT INTO student (id, name, age, sex, birthday) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -29,6 +35,12 @@ public class DBStudent {
         }
     }
 
+    /**
+     * 删除学生
+     * @param id
+     * @return
+     * @throws SQLException
+     */
     public static int deleteStudent(String id) throws SQLException {
         String sql = "DELETE FROM student WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -37,6 +49,12 @@ public class DBStudent {
         }
     }
 
+    /**
+     * 更新学生
+     * @param student
+     * @return
+     * @throws SQLException
+     */
     public static int updateStudent(Student student) throws SQLException {
         String sql = "UPDATE student SET name = ?, age = ?, sex = ?, birthday = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -49,6 +67,12 @@ public class DBStudent {
         }
     }
 
+    /**
+     * 根据学号查询学生
+     * @param id
+     * @return
+     * @throws SQLException
+     */
     public static Student selectStudentById(String id) throws SQLException {
         String sql = "SELECT * FROM student WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -70,6 +94,11 @@ public class DBStudent {
         return null;
     }
 
+    /**
+     * 查询所有学生
+     * @return
+     * @throws SQLException
+     */
     public static List<Student> selectAllStudents() throws SQLException {
         List<Student> students = new ArrayList<>();
         String sql = "SELECT * FROM student";
@@ -90,6 +119,10 @@ public class DBStudent {
         return students;
     }
 
+    /**
+     * 关闭数据库连接
+     * @throws SQLException
+     */
     public static void closeConnection() throws SQLException {
         if (connection != null && !connection.isClosed()) {
             connection.close();
