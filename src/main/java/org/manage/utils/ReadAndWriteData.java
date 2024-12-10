@@ -1,4 +1,4 @@
-package org.manage;
+package org.manage.utils;
 
 import org.manage.pojo.Person;
 
@@ -6,6 +6,11 @@ import java.io.*;
 import java.util.List;
 
 public class ReadAndWriteData {
+    /**
+     * 保存数据到文件
+     * @param filePath 文件路径
+     * @param list 数据列表
+     */
     public void saveData(String filePath, List<Person> list) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
             for (Person person : list) {
@@ -17,6 +22,10 @@ public class ReadAndWriteData {
         }
     }
 
+    /**
+     * 读取文件数据
+     * @param filePath 文件路径
+     */
     public void readData(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;

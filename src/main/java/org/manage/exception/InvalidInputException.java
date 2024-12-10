@@ -1,7 +1,7 @@
-package org.manage;
+package org.manage.exception;
 
 public class InvalidInputException extends RuntimeException {
   public InvalidInputException(String message) {
-    super(message);
+    System.out.println("InvalidInputException: " + message);  // Print the message
   }
 }

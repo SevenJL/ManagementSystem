@@ -6,67 +6,59 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Student implements Person {
+public class Lecturer implements Person {
     private static final long serialVersionUID = 1L;
-    private static int idNumber = 0;
-    private int studentNumber = 0; // 学生编号计数
-    private String id; // 学号
+    private String id; // 工号
     private String name; // 姓名
     private Date birthday; // 出生日期
     private int age; // 年龄
     private String sex; // 性别
-    private Clazz clazz; // 班级
-    private ClassTeacher classTeacher; // 班主任
+    private String course; // 所教课程
+
 
     // 带参数构造方法
+    public Lecturer(String id, String name, int age, String sex, String course, Date birthday) throws ParseException {
+        check(id, name, age, sex, birthday);
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.sex = sex;
+        this.course = course;
+        this.birthday = birthday;
+    }
+
     @Override
     public String showInfo() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-        return "学生信息-系统编号" + studentNumber +
-                " 学号：" + id +
-                ", 姓名：" + name +
-                ", 性别：" + sex +
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+        return "任课教师-工号：" + id +
+                ", 名字：" + name +
                 ", 年龄：" + age +
-                ", 出生日期：" + sdf.format(birthday);
+                ", 性别：" + sex +
+                ", 出生日期：" + sdf.format(birthday) +
+                ", 担任课程：" + course;
     }
+
     @Override
     public void check(String id, String name, int age, String sex, Date birthday) throws InvalidInputException {
-        if (!id.matches("S\\d{3}")) {
-            throw new InvalidInputException("学号格式错误，必须以'S'开头，后接3位数字！");
+        if (!id.matches("A\\d{3}")) {
+            throw new InvalidInputException("工号格式错误，必须以'A'开头，后接3位数字！");
         }
         if (name == null || name.isEmpty()) {
             throw new InvalidInputException("姓名不能为空！");
         }
-        if (age < 1 || age > 100) {
-            throw new InvalidInputException("年龄必须在1到100之间！");
+        if (age < 25 || age > 65) {
+            throw new InvalidInputException("年龄必须在25到65之间！");
         }
         if (!sex.equals("男") && !sex.equals("女")) {
             throw new InvalidInputException("性别只能是'男'或'女'！");
         }
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String string = sdf.format(birthday);
         if (!string.matches("\\d{4}-\\d{2}-\\d{2}")) {
             throw new InvalidInputException("出生日期格式错误，必须为yyyy-MM-dd！");
         }
-    }
-    public Student(String systemNumber,String id, String name, int age, String sex, Date birthday) throws ParseException {
-        this.studentNumber = Integer.parseInt(systemNumber);
-        check(id, name, age, sex, birthday);
-        this.id = id;
-        this.name = name;
-        this.age = age;
-        this.sex = sex;
-        this.birthday = birthday;
-    }
 
-    public Student(String id, String name, int age, String sex, Date birthday) throws ParseException {
-        this.studentNumber = idNumber++;
-        check(id, name, age, sex, birthday);
-        this.id = id;
-        this.name = name;
-        this.age = age;
-        this.sex = sex;
-        this.birthday = birthday;
     }
     // Getter 和 Setter 方法
 
@@ -110,20 +102,12 @@ public class Student implements Person {
         this.sex = sex;
     }
 
-    public Clazz getClazz() {
-        return clazz;
+    public String getCourse() {
+        return course;
     }
 
-    public void setClazz(Clazz clazz) {
-        this.clazz = clazz;
-    }
-
-    public ClassTeacher getClassTeacher() {
-        return classTeacher;
-    }
-
-    public void setClassTeacher(ClassTeacher classTeacher) {
-        this.classTeacher = classTeacher;
+    public void setCourse(String course) {
+        this.course = course;
     }
 
 }
