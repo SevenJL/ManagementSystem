@@ -1,6 +1,6 @@
 package org.manage.utils;
 
-import org.manage.pojo.Person;
+import org.manage.entity.Person;
 
 import java.io.*;
 import java.util.List;

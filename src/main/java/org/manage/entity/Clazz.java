@@ -1,4 +1,4 @@
-package org.manage.pojo;
+package org.manage.entity;
 
 import java.io.*;
 import java.text.ParseException;

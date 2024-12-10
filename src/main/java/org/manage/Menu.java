@@ -1,8 +1,11 @@
 package org.manage;
 
+import org.manage.entity.Clazz;
+import org.manage.entity.Lecturer;
+import org.manage.entity.Student;
 import org.manage.exception.InvalidInputException;
-import org.manage.pojo.*;
-import org.manage.utils.DBUtil;
+import org.manage.utils.DBLecturer;
+import org.manage.utils.DBStudent;
 
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -10,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 public class Menu {
     private final String[][] menus; // 存储一级和二级菜单内容
@@ -220,7 +222,8 @@ public class Menu {
     private void deleteStudent() throws SQLException {
         System.out.print("请输入要删除的学生学号：");
         String id = scanner.next();
-        if (clazz.isStudentExist(id)) {
+        Student student = DBStudent.selectStudentById(id);
+        if (student != null) {
             DBStudent.deleteStudent(id);
             System.out.println("学生删除成功！");
         } else {
@@ -231,10 +234,11 @@ public class Menu {
     /**
      * 修改学生信息
      */
-    private void updateStudent() throws ParseException {
+    private void updateStudent() throws ParseException, SQLException {
         System.out.print("请输入要修改的学生学号：");
         String id = scanner.next();
-        if (!clazz.isStudentExist(id)) {
+        Student selectStudentById = DBStudent.selectStudentById(id);
+        if (selectStudentById != null) {
             System.out.println("学号不存在，无法修改！");
             return;
         }

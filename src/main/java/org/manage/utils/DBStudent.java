@@ -1,5 +1,5 @@
-package org.manage.pojo;
-import org.manage.utils.DBUtil;
+package org.manage.utils;
+import org.manage.entity.Student;
 
 import java.sql.*;
 import java.text.ParseException;
