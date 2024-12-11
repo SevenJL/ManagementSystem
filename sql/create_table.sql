@@ -1,4 +1,7 @@
+## 创建数据库
 CREATE DATABASE IF NOT EXISTS class_management DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+## 学生表
 CREATE TABLE student (
                          studentNumber INT AUTO_INCREMENT PRIMARY KEY COMMENT '系统编号',
                          id VARCHAR(10) NOT NULL UNIQUE COMMENT '学号',
@@ -8,6 +11,7 @@ CREATE TABLE student (
                          sex ENUM('男', '女') NOT NULL COMMENT '性别'
 ) COMMENT '学生表';
 
+## 插入学生数据
 INSERT INTO student (id, name, birthday, age, sex)
 VALUES
     ('S001', '张山', '1992-02-03', 23, '男'),
@@ -16,7 +20,7 @@ VALUES
     ('S004', '李天', '1984-02-03', 24, '男'),
     ('S005', '谢空', '2021-02-03', 26, '女');
 
-
+## 教师表
 CREATE TABLE lecturer (
                           lecturerNumber INT AUTO_INCREMENT PRIMARY KEY COMMENT '系统编号',
                           id VARCHAR(10) NOT NULL UNIQUE COMMENT '工号',
@@ -27,6 +31,7 @@ CREATE TABLE lecturer (
                           course VARCHAR(100) NOT NULL COMMENT '担任课程'
 ) COMMENT '教师表';
 
+## 插入教师数据
 INSERT INTO lecturer (id, name, birthday, age, sex, course)
 VALUES
     ('A001', '李一', '1990-01-01', 33, '男', '高级程序设计'),

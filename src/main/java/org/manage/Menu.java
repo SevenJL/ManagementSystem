@@ -219,7 +219,11 @@ public class Menu {
             Date birthdayDate = dateFormat.parse(birthday);
             // 创建 Student 对象
             Student student = new Student(id, name, age, gender, birthdayDate);
-            DBStudent.addStudent(student);
+            int i = DBStudent.addStudent(student);
+            if (i < 0) {
+                System.out.println("学生添加失败！");
+            }
+            System.out.println("学生添加成功！");
         } catch (ParseException e) {
             System.out.println("日期解析错误：" + e.getMessage());
         } catch (SQLException e) {
@@ -235,7 +239,11 @@ public class Menu {
         String id = scanner.next();
         Student student = DBStudent.selectStudentById(id);
         if (student != null) {
-            DBStudent.deleteStudent(id);
+            int i = DBStudent.deleteStudent(id);
+            if (i <= 0) {
+                System.out.println("学生删除失败！");
+                return;
+            }
             System.out.println("学生删除成功！");
         } else {
             System.out.println("学号不存在，删除失败！");
@@ -245,7 +253,7 @@ public class Menu {
     /**
      * 修改学生信息
      */
-    private void updateStudent() throws ParseException, SQLException {
+    private void updateStudent() throws SQLException {
         System.out.print("请输入要修改的学生学号：");
         String id = scanner.next();
         Student selectStudentById = DBStudent.selectStudentById(id);
@@ -267,7 +275,10 @@ public class Menu {
             Date birthdayDate = dateFormat.parse(birthday);
             // 创建 Student 对象
             Student student = new Student(id, name, age, gender, birthdayDate);
-            DBStudent.updateStudent(student);
+            int i = DBStudent.updateStudent(student);
+            if (i < 0) {
+                System.out.println("学生修改失败！");
+            }
         } catch (ParseException e) {
             System.out.println("日期解析错误：" + e.getMessage());
         } catch (SQLException e) {
@@ -339,7 +350,11 @@ public class Menu {
             Date birthdayDate = dateFormat.parse(birthday);
             // 创建 Student 对象
             Lecturer addTeacher = new Lecturer(id, name, age, sex, course, birthdayDate);
-            DBLecturer.addLecturer(addTeacher);
+            int i = DBLecturer.addLecturer(addTeacher);
+            if (i < 0) {
+                System.out.println("教师添加失败！");
+            }
+            System.out.println("教师添加成功！");
         } catch (ParseException e) {
             System.out.println("日期解析错误：" + e.getMessage());
         } catch (SQLException e) {
@@ -356,7 +371,11 @@ public class Menu {
         // 查询教师信息
         Lecturer lecturer = DBLecturer.selectLecturerById(id);
         if (lecturer != null) {
-            DBLecturer.deleteLecturer(id);
+            int i = DBLecturer.deleteLecturer(id);
+            if (i <= 0) {
+                System.out.println("教师删除失败！");
+                return;
+            }
             System.out.println("教师删除成功！");
         } else {
             System.out.println("工号不存在，删除失败！");

@@ -27,7 +27,7 @@ public class DBLecturer {
 
     /**
      * 添加教师
-     * @param lecturer
+     * @param lecturer 
      * @return
      * @throws SQLException
      */

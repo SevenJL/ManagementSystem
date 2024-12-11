@@ -5,6 +5,9 @@ import org.manage.entity.Person;
 import java.io.*;
 import java.util.List;
 
+/**
+ * 读写数据工具类
+ */
 public class ReadAndWriteData {
     /**
      * 保存数据到文件
