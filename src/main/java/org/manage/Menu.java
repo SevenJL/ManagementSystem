@@ -14,9 +14,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * 班级信息管理系统
+ */
 public class Menu {
-    private final String[][] menus; // 存储一级和二级菜单内容
+    // 存储一级和二级菜单内容
+    private final String[][] menus;
+
+    // 创建 Scanner 对象
     private final Scanner scanner;
+
+    // 创建班级对象
     private final Clazz clazz = new Clazz("软件工程", "2024", 50);
 
     public static void main(String[] args) throws ParseException, SQLException {
@@ -59,17 +67,17 @@ public class Menu {
             System.out.print("请输入序号使用功能：");
             int choice = getUserChoice(menus[0].length);
             switch (choice) {
-                case 1 -> displayClassInfo();
-                case 2 -> studentManagement();
-                case 3 -> teacherManagement();
-                case 4 -> saveStudentInfo();
-                case 5 -> saveTeacherInfo();
-                case 6 -> readFile();
+                case 1 -> displayClassInfo(); // 显示班级信息
+                case 2 -> studentManagement(); // 学生管理
+                case 3 -> teacherManagement(); // 教师管理
+                case 4 -> saveStudentInfo(); // 保存学生信息到文件
+                case 5 -> saveTeacherInfo(); // 保存教师信息到文件
+                case 6 -> readFile(); // 读取文件
                 case 7 -> {
                     System.out.println("系统退出成功，欢迎下次使用！");
                     // 关闭资源
                     scanner.close();
-                    // 关闭数据库连接
+                    // 关闭数据库连接 避免资源浪费
                     DBStudent.closeConnection();
                     DBLecturer.closeConnection();
                     return;
@@ -90,10 +98,10 @@ public class Menu {
             List<Lecturer> lecturers = DBLecturer.selectAllLecturers();
             // 显示班级信息
             System.out.println(
-                    "2024级" + clazz.getGrade() + 
-                    "级-" + clazz.getMajor() + 
-                    "专业-学生人数：" + students.size() + 
-                    ",专业教师人数：" + lecturers.size());
+                    "2024级" + clazz.getGrade() +
+                            "级-" + clazz.getMajor() +
+                            "专业-学生人数：" + students.size() +
+                            ",专业教师人数：" + lecturers.size());
             // 显示学生信息
             System.out.println("学生列表：");
             for (Student student : students) {
@@ -114,9 +122,10 @@ public class Menu {
      */
     private void displayStudentInfo() {
         try {
-            // 查询数据库
+            // 查询数据库(查询所有学生)
             List<Student> students = DBStudent.selectAllStudents();
             System.out.println("学生列表：");
+            // 显示学生信息 遍历打印出
             for (Student student : students) {
                 System.out.println(student.showInfo());
             }
@@ -131,8 +140,10 @@ public class Menu {
      */
     private void displayLecturerInfo() {
         try {
+            // 查询数据库(查询所有教师)
             List<Lecturer> lecturers = DBLecturer.selectAllLecturers();
             System.out.println("教师列表：");
+            // 显示教师信息 遍历打印出
             for (Lecturer lecturer : lecturers) {
                 System.out.println(lecturer.showInfo());
             }
@@ -151,11 +162,11 @@ public class Menu {
             System.out.print("请输入序号使用功能：");
             int choice = getUserChoice(menus[1].length);
             switch (choice) {
-                case 1 -> displayStudentInfo();
-                case 2 -> addStudent();
-                case 3 -> deleteStudent();
-                case 4 -> updateStudent();
-                case 5 -> searchStudent();
+                case 1 -> displayStudentInfo(); // 显示学生信息
+                case 2 -> addStudent(); // 添加学生
+                case 3 -> deleteStudent(); // 删除学生
+                case 4 -> updateStudent(); // 修改学生
+                case 5 -> searchStudent(); // 根据学号查询
                 case 6 -> {
                     System.out.println("返回上级菜单！");
                     return;
@@ -191,7 +202,7 @@ public class Menu {
     /**
      * 添加学生
      */
-    private void addStudent(){
+    private void addStudent() {
         System.out.print("请输入学生学号（S开头4位，例如：S001）：");
         String id = scanner.next();
         System.out.print("请输入学生姓名：");
@@ -309,7 +320,7 @@ public class Menu {
     /**
      * 添加教师
      */
-    private void addTeacher() throws ParseException {
+    private void addTeacher() {
         System.out.print("请输入教师工号（A开头4位，例如：A001）：");
         String id = scanner.next();
         System.out.print("请输入教师姓名：");
@@ -342,6 +353,7 @@ public class Menu {
     private void deleteTeacher() throws SQLException {
         System.out.print("请输入要删除的教师工号：");
         String id = scanner.next();
+        // 查询教师信息
         Lecturer lecturer = DBLecturer.selectLecturerById(id);
         if (lecturer != null) {
             DBLecturer.deleteLecturer(id);
@@ -357,8 +369,11 @@ public class Menu {
     private void updateTeacher() throws SQLException {
         System.out.print("请输入要修改的教师工号：");
         String id = scanner.next();
+        // 查询教师信息
         Lecturer lecturer = DBLecturer.selectLecturerById(id);
+        // 判断教师是否存在
         if (lecturer == null) {
+            // 不存在则返回
             System.out.println("工号不存在，无法修改！");
             return;
         }
@@ -379,6 +394,7 @@ public class Menu {
             Date birthdayDate = dateFormat.parse(birthday);
             // 创建 Student 对象
             Lecturer updatedTeacher = new Lecturer(id, name, age, sex, course, birthdayDate);
+            // 更新教师信息
             DBLecturer.updateLecturer(updatedTeacher);
         } catch (ParseException e) {
             System.out.println("日期解析错误：" + e.getMessage());
@@ -444,5 +460,4 @@ public class Menu {
             System.out.println("读取失败：" + e.getMessage());
         }
     }
-    
 }

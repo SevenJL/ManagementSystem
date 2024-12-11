@@ -19,33 +19,13 @@ public class Clazz {
     // 教师列表
     private final List<Lecturer> teachers = new ArrayList<>();
 
-    public String getMajor() {
-        return major;
-    }
-
-    public String getGrade() {
-        return grade;
-    }
-
-    public int getMaxStudents() {
-        return maxStudents;
-    }
-
-    public List<Student> getStudents() {
-        return students;
-    }
-
-    public List<Lecturer> getTeachers() {
-        return teachers;
-    }
-
     public Clazz(String major, String grade, int maxStudents) {
         this.major = major;
         this.grade = grade;
         this.maxStudents = maxStudents;
     }
 
-    
+
     public void addStudent(Student student) {
         if (students.size() >= maxStudents) {
             System.out.println("班级已满，无法添加更多学生！");
@@ -92,6 +72,7 @@ public class Clazz {
     }
 
     // 添加教师
+
     public void addTeacher(Lecturer teacher) {
         if (!isFull()) {
             teachers.add(teacher);
@@ -100,13 +81,13 @@ public class Clazz {
             System.out.println("教师人数已满，无法添加！");
         }
     }
-
     // 删除教师
+
     public void deleteTeacher(String teacherId) {
         teachers.removeIf(teacher -> teacher.getId().equals(teacherId));
     }
-
     // 更新教师信息
+
     public void updateTeacher(Lecturer updatedTeacher) {
         for (int i = 0; i < teachers.size(); i++) {
             if (teachers.get(i).getId().equals(updatedTeacher.getId())) {
@@ -116,8 +97,8 @@ public class Clazz {
         }
         System.out.println("未找到该教师，无法更新！");
     }
-
     // 根据工号查询教师
+
     public Lecturer selectTeacherById(String teacherId) {
         for (Lecturer teacher : teachers) {
             if (teacher.getId().equals(teacherId)) {
@@ -126,13 +107,13 @@ public class Clazz {
         }
         return null;
     }
-
     // 判断教师是否存在
+
     public boolean isTeacherExist(String teacherId) {
         return teachers.stream().anyMatch(teacher -> teacher.getId().equals(teacherId));
     }
-
     // 显示教师信息
+
     public void printTeacherInfo() {
         if (teachers.isEmpty()) {
             System.out.println("暂无专业教师信息！");
@@ -143,13 +124,20 @@ public class Clazz {
             System.out.println(teacher.showInfo());
         }
     }
-    
-    // 判断班级是否已满
+
+    /**
+     * 判断教师人数是否已满
+     * @return
+     */
     private boolean isFull() {
         return teachers.size() >= 3;
     }
 
-    // 保存学生数据
+    /**
+     * 保存学生数据
+     * @param path
+     * @throws IOException
+     */
     public void saveStudentData(String path) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
             for (Student student : students) {
@@ -159,7 +147,11 @@ public class Clazz {
         }
     }
 
-    // 保存教师数据
+    /**
+     * 保存教师数据
+     * @param path
+     * @throws IOException
+     */
     public void saveTeacherData(String path) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
             for (Lecturer teacher : teachers) {
@@ -169,6 +161,12 @@ public class Clazz {
         }
     }
 
+    /**
+     * 读取数据
+     * @param path
+     * @throws IOException
+     * @throws ParseException
+     */
     public void readData(String path) throws IOException, ParseException {
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line;
@@ -185,6 +183,12 @@ public class Clazz {
         }
     }
 
+    /**
+     * 解析学生信息
+     * @param line
+     * @return
+     * @throws ParseException
+     */
     private Student parseStudent(String line) throws ParseException {
         String[] parts = line.split(", ");
         String[] parts0Arr = parts[0].split(" ");
@@ -200,6 +204,12 @@ public class Clazz {
     }
 
 
+    /**
+     * 解析教师信息
+     * @param line
+     * @return
+     * @throws ParseException
+     */
     private Lecturer parseTeacher(String line) throws ParseException {
         // 解析教师信息的字符串，假设格式固定
         String[] parts = line.split(", ");
@@ -217,5 +227,25 @@ public class Clazz {
         return new Lecturer(id, name, age, sex, course, birthday);
     }
 
+
+    public String getMajor() {
+        return major;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public int getMaxStudents() {
+        return maxStudents;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public List<Lecturer> getTeachers() {
+        return teachers;
+    }
 
 }

@@ -11,8 +11,12 @@ import java.util.List;
  * 教师数据库操作类
  */
 public class DBLecturer {
+    
     private static Connection connection;
 
+    /**
+     * 静态代码块，初始化数据库连接
+     */
     static {
         try {
             connection = DBUtil.getConnection();
@@ -21,6 +25,12 @@ public class DBLecturer {
         }
     }
 
+    /**
+     * 添加教师
+     * @param lecturer
+     * @return
+     * @throws SQLException
+     */
     public static int addLecturer(Lecturer lecturer) throws SQLException {
         String sql = "INSERT INTO lecturer (id, name, age, sex, birthday, course) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -34,6 +44,12 @@ public class DBLecturer {
         }
     }
 
+    /**
+     * 删除教师
+     * @param id
+     * @return
+     * @throws SQLException
+     */
     public static int deleteLecturer(String id) throws SQLException {
         String sql = "DELETE FROM lecturer WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -42,6 +58,12 @@ public class DBLecturer {
         }
     }
 
+    /**
+     * 更新教师
+     * @param lecturer
+     * @return
+     * @throws SQLException
+     */
     public static int updateLecturer(Lecturer lecturer) throws SQLException {
         String sql = "UPDATE lecturer SET name = ?, age = ?, sex = ?, birthday = ?, course = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -55,6 +77,12 @@ public class DBLecturer {
         }
     }
 
+    /**
+     * 根据工号查询教师
+     * @param id
+     * @return
+     * @throws SQLException
+     */
     public static Lecturer selectLecturerById(String id) throws SQLException {
         String sql = "SELECT * FROM lecturer WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -77,6 +105,11 @@ public class DBLecturer {
         return null;
     }
 
+    /**
+     * 查询所有教师
+     * @return
+     * @throws SQLException
+     */
     public static List<Lecturer> selectAllLecturers() throws SQLException {
         List<Lecturer> lecturers = new ArrayList<>();
         String sql = "SELECT * FROM lecturer";
@@ -98,6 +131,10 @@ public class DBLecturer {
         return lecturers;
     }
 
+    /**
+     * 关闭数据库连接
+     * @throws SQLException
+     */
     public static void closeConnection() throws SQLException {
         if (connection != null && !connection.isClosed()) {
             connection.close();
